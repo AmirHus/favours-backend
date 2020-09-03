@@ -4,6 +4,9 @@
   "description": "",
   "main": "build/index.js",
   "scripts": {
+    "start": "nodemon --watch",
+    "compile": "tsc -p ./",
+    "lint": "tslint -p ./",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
