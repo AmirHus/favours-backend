@@ -1,4 +1,4 @@
-# FCC API
+# Favour tracking application
 This repo is the API for the favour tracking application. It will be developed with nodejs using typescript
 
 ## Setup
