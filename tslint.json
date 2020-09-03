@@ -1,0 +1,88 @@
+{
+  "defaultSeverity": "warning",
+  "extends": [
+    "tslint:recommended",
+    "tslint-plugin-prettier",
+    "tslint-config-prettier"
+  ],
+  "linterOptions": {
+    "exclude": [
+      "node_modules/**",
+      "*.json",
+      "**/*.json",
+      "**/*/*.json"
+    ]
+  },
+  "rules": {
+    "no-console": false,
+    "array-type": [true, "array-simple"],
+    "arrow-return-shorthand": true,
+    "quotemark": [true, "single"],
+    "indent": [true, "spaces", 2],
+    "interface-name": false,
+    "ordered-imports": false,
+    "object-literal-sort-keys": false,
+    "no-consecutive-blank-lines": [true, 2],
+    "ban": [true,
+      { "name": "parseInt", "message": "tsstyle#type-coercion" },
+      { "name": "parseFloat", "message": "tsstyle#type-coercion" },
+      { "name": "Array", "message": "tsstyle#array-constructor" }
+    ],
+    "ban-types": [true,
+      ["Object", "Use {} instead."],
+      ["String", "Use 'string' instead."],
+      ["Number", "Use 'number' instead."],
+      ["Boolean", "Use 'boolean' instead."]
+    ],
+    "class-name": true,
+    "curly": [true, "ignore-same-line"],
+    "forin": true,
+    "jsdoc-format": true,
+    "label-position": true,
+    "member-access": [true, "no-public"],
+    "new-parens": true,
+    "no-angle-bracket-type-assertion": true,
+    "no-any": true,
+    "no-unsafe-any": true,
+    "no-arg": true,
+    "no-conditional-assignment": true,
+    "no-construct": true,
+    "no-debugger": true,
+    "no-default-export": true,
+    "no-duplicate-variable": true,
+    "no-empty-interfaces": false,
+    "no-inferrable-types": true,
+    "no-namespace": [true, "allow-declarations"],
+    "no-reference": true,
+    "no-string-throw": true,
+    "no-unused-expression": true,
+    "no-var-keyword": true,
+    "object-literal-shorthand": true,
+    "only-arrow-functions": [true, "allow-named-functions"],
+    "prefer-const": true,
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
+    "switch-default": true,
+    "triple-equals": true,
+    "use-isnan": true,
+    "variable-name": [
+      true,
+      "check-format",
+      "allow-leading-underscore",
+      "ban-keywords"
+    ],
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-module",
+      "check-separator",
+      "check-rest-spread",
+      "check-type",
+      "check-typecast",
+      "check-type-operator",
+      "check-preblock"
+    ],
+    "prettier": true
+  }
+}
