@@ -1,7 +1,8 @@
-import { BaseContext } from 'koa';
 import { pool } from '../dbqurries/pool';
 
-// insert new favour into the table
-async function createUser(ctx: Body) {
+// read favours from the table
+export async function createFavour(ctx: Body) {
   const results = await pool.query('select * from favour');
+  console.table(results.rows);
+  return results;
 }
