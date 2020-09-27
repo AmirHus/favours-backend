@@ -5,3 +5,9 @@ export const DB_CONFIG = {
   PORT: Number.parseInt(process.env.DB_PORT, 10),
   HOST: process.env.DB_HOST as string,
 };
+
+export const AUTH0 = {
+  BASE_ENDPOINT_URL: `https://${process.env.AUTH0_BASE_URL}`,
+  CLIENT_ID: process.env.AUTH0_CLIENT_ID as string,
+  CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET as string,
+};
