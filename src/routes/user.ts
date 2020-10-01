@@ -30,7 +30,7 @@ userRouter.post('/user', async (ctx) => {
     const user = await createUser({
       id: auth0User.user_id,
       email: newUser.email,
-      name: newUser.password,
+      name: newUser.name,
     });
 
     ctx.status = 200;
