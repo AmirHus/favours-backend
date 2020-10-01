@@ -1,8 +1,20 @@
 import { pool } from '../dbqurries/pool';
 
-// read users from the table
+// read all users from the table
 export async function readUsers() {
-  const results = await pool.query('select * from user');
-  console.table(results.rows);
-  return results;
+  const query = {
+    text: 'SELECT * FROM user',
+  };
+  // callback
+  await pool.query(query);
+}
+
+// Create a new user
+export async function createUser(email: string, name: string) {
+  const query = {
+    text: 'INSERT INTO user(email, name) VALUES($1, $2)',
+    values: [email, name],
+  };
+  // callback
+  await pool.query(query);
 }
