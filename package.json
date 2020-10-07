@@ -12,6 +12,8 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/auth0": "^2.20.8",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/koa": "^2.11.4",
     "@types/koa-bodyparser": "^4.3.0",
     "@types/koa-router": "^7.4.1",
@@ -27,8 +29,11 @@
   },
   "dependencies": {
     "@koa/cors": "^3.1.0",
+    "auth0": "^2.29.0",
+    "axios": "^0.20.0",
     "class-validator": "^0.12.2",
     "joi": "^17.2.1",
+    "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^9.4.0",
