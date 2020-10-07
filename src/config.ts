@@ -7,8 +7,9 @@ export const DB_CONFIG = {
 };
 
 export const AUTH0 = {
-  BASE_ENDPOINT_URL: `https://${process.env.AUTH_DOMAIN}`,
-  DOMAIN: process.env.AUTH_DOMAIN as string,
+  BASE_ENDPOINT_URL: `https://${process.env.AUTH0_DOMAIN}`,
+  DOMAIN: process.env.AUTH0_DOMAIN as string,
+  JWKS_URI: `https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`,
   CLIENT_ID: process.env.AUTH0_CLIENT_ID as string,
   CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET as string,
   HOST: process.env.DB_HOST as string,
