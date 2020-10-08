@@ -10,6 +10,17 @@ export async function createUser(newUser: IUser) {
     `,
     [newUser.id, newUser.email, newUser.name]
   );
+  return user.rows[0];
+}
+
+export async function getUserById(id: string) {
+  const user = await pool.query(
+    `
+    SELECT * FROM public.user
+    WHERE id = $1
+    `,
+    [id]
+  );
 
   return user.rows[0];
 }
