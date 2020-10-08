@@ -1,5 +1,5 @@
-import { IPublicRequestReward } from '../interfaces/iPublicRequestReward';
 import { INewPublicRequestReward } from '../interfaces/iNewPublicRequestReward';
+import { uniqueRewardsReducer } from './uniqueRewardsReducer';
 
 export function newPublicRequestRewardsFormatter(
   publicRequestId: number,
@@ -11,7 +11,9 @@ export function newPublicRequestRewardsFormatter(
   const rewardItems = [] as string[];
   const numberofRewards = [] as number[];
 
-  rewards.forEach((reward) => {
+  const uniqueRewards = uniqueRewardsReducer(rewards);
+
+  uniqueRewards.forEach((reward) => {
     userIds.push(userId);
     publicRequestIds.push(publicRequestId);
     rewardItems.push(reward.rewardItem);

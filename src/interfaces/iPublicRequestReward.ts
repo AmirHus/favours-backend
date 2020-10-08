@@ -1,6 +1,6 @@
 export interface IPublicRequestReward {
   publicRequestId: number;
   userId: string;
-  reward: string;
-  noOfRewards: number;
+  reward_item: string;
+  no_of_rewards: number;
 }
