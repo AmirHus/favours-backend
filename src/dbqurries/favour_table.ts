@@ -15,3 +15,32 @@ export async function createFavour(
   // callback
   await pool.query(query);
 }
+
+export async function completeFavour(favourId: number) {
+  const query = {
+    text: 'UPDATE favour SET owing = false, repaid = true WHERE id = $1',
+    values: [favourId],
+  };
+  // callback
+  await pool.query(query);
+}
+
+// read favours from the table
+export async function getOwedFavours(user: string) {
+  const query = {
+    text: 'SELECT * FROM favour where created_by = $1 and repaid = false',
+    values: [user],
+  };
+  // callback
+  return (await pool.query(query)).rows;
+}
+
+// read favours from the table
+export async function getOwingFavours(user: string) {
+  const query = {
+    text: 'SELECT * FROM favour where other_party = $1 and repaid = false',
+    values: [user],
+  };
+  // callback
+  return (await pool.query(query)).rows;
+}
