@@ -16,7 +16,7 @@ import { AWS_CONFIG } from '../config';
 
 export const favourRouter = new Router();
 
-// get favours
+// get all favours which this user owes or owed to.
 favourRouter.get('/favour', async (ctx) => {
   const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
 
@@ -28,11 +28,12 @@ favourRouter.get('/favour', async (ctx) => {
   return (ctx.body = { message: favours });
 });
 
-// create a new favour
+// create a new favour in the database for this user.
 favourRouter.post('/favour', async (ctx) => {
   const body = ctx.request.body;
+  const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
 
-  // data validation
+  // favour data validation
   try {
     await createFavourValidator.validateAsync(body, { abortEarly: false });
   } catch (error) {
@@ -40,21 +41,24 @@ favourRouter.post('/favour', async (ctx) => {
     return (ctx.body = (error as ValidationError).message);
   }
 
-  // Create the favour
+  // create the favour
   try {
-    await createFavour(body.createdBy, body.otherParty, body.favourItem, 1);
+    await createFavour(
+      body.createdBy,
+      body.otherParty,
+      body.favourItem,
+      body.noRewards
+    );
   } catch (error) {
     ctx.status = 400;
-    if (error.code === '23503') {
-      return (ctx.body = 'Please make sure a valid user');
-    }
+    return (ctx.body = (error as ValidationError).message);
   }
   // save the user contained in the POST body
   ctx.status = 200;
   return (ctx.body = body);
 });
 
-// complete favour
+// complete a favour
 favourRouter.post('/favour/complete', async (ctx) => {
   const body = ctx.request.body;
   const files = ctx.request.files;
@@ -67,7 +71,7 @@ favourRouter.post('/favour/complete', async (ctx) => {
     return (ctx.body = (error as ValidationError).message);
   }
 
-  // Create the favour
+  // upload the file to the database
   const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
 
   const uploadFile = async (
@@ -94,7 +98,7 @@ favourRouter.post('/favour/complete', async (ctx) => {
       s3.upload(
         {
           // ACL: "public-read",
-          Bucket: AWS_CONFIG.BUCKET_ID, // todo
+          Bucket: AWS_CONFIG.BUCKET_ID,
           Body: stream,
           Key: body.id + '/' + fileName,
           ContentType: fileType,
@@ -116,7 +120,6 @@ favourRouter.post('/favour/complete', async (ctx) => {
     uploadFile(files.file.name, files.file.path, files.file.type);
   } catch (error) {
     ctx.status = 400;
-
     return (ctx.body = 'Could not complete favour');
   }
   // save the user contained in the POST body
