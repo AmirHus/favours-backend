@@ -13,6 +13,7 @@ import {
   createPublicRequestReward,
   getUserRewards,
   updateUserRewards,
+  getPublicRequestRewards,
 } from '../dbqurries/publicRequestRewardDataAccess';
 import { addRewardsValidator } from '../validators/addRewardsValidator';
 import { IPublicRequestReward } from '../interfaces/iPublicRequestReward';
@@ -20,10 +21,18 @@ import { updateUserRewardsFormatter } from '../utilities/updateUserRewardsFormat
 
 export const publicRequestRouter = new Router();
 
-publicRequestRouter.get('/availablePublicRequest', async (ctx) => {
+publicRequestRouter.get('/publicRequest/available', async (ctx) => {
   const publicRequests = await getAvailablePublicRequests();
   ctx.status = 200;
   return (ctx.body = publicRequests);
+});
+
+publicRequestRouter.get('/publicRequest/:id/reward', async (ctx) => {
+  const publicRequestId = (ctx.params as { id: number }).id;
+
+  const rewards = await getPublicRequestRewards(publicRequestId);
+  ctx.status = 200;
+  return (ctx.body = rewards);
 });
 
 publicRequestRouter.post('/publicRequest', async (ctx) => {
