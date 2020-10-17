@@ -14,7 +14,7 @@ const publicKeySet = JwksClient({
 });
 
 export const tokenVerifier: Middleware = async (ctx, next) => {
-  if (exempt.includes(ctx.req.url as string)) {
+  if (publicEndpoints.includes(ctx.req.url as string)) {
     return next();
   }
 
@@ -78,4 +78,4 @@ function getKey(header: jwt.JwtHeader, callback: jwt.SigningKeyCallback): void {
   );
 }
 
-const exempt = ['/auth/token', '/user'];
+const publicEndpoints = ['/auth/token', '/user', '/availablePublicRequest'];

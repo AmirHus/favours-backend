@@ -18,3 +18,17 @@ export async function createPublicRequest(publicRequest: INewPublicRequest) {
 
   return newPublicRequest.rows[0];
 }
+
+export async function getAvailablePublicRequests() {
+  const availalbePublicRequest = await pool.query(
+    `
+    SELECT P.id, U.name as created_by_name, u.email as created_by_email, description, title
+    FROM public.public_request P INNER JOIN public.user U
+    ON P.created_by = U.id
+    WHERE P.accepted_by IS NULL
+    ORDER BY P.id DESC
+    `
+  );
+
+  return availalbePublicRequest.rows;
+}
