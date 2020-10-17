@@ -2,7 +2,10 @@ import Router from 'koa-router';
 import { ValidationError } from 'joi';
 import { createPublicRequestValidator } from '../validators/createPublicRequestValidator';
 import { IAuth0Token } from '../interfaces/iAuth0Token';
-import { createPublicRequest } from '../dbqurries/publicRequestDataAccess';
+import {
+  createPublicRequest,
+  getAvailablePublicRequests,
+} from '../dbqurries/publicRequestDataAccess';
 import { INewPublicRequestReward } from '../interfaces/iNewPublicRequestReward';
 import { newPublicRequestRewardsFormatter } from '../utilities/newPublicRequestRewardsFormatter';
 import { IPublicRequest } from '../interfaces/iPublicRequest';
@@ -16,6 +19,12 @@ import { IPublicRequestReward } from '../interfaces/iPublicRequestReward';
 import { updateUserRewardsFormatter } from '../utilities/updateUserRewardsFormatter';
 
 export const publicRequestRouter = new Router();
+
+publicRequestRouter.get('/availablePublicRequest', async (ctx) => {
+  const publicRequests = await getAvailablePublicRequests();
+  ctx.status = 200;
+  return (ctx.body = publicRequests);
+});
 
 publicRequestRouter.post('/publicRequest', async (ctx) => {
   const body = ctx.request.body as {

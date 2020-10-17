@@ -78,4 +78,4 @@ function getKey(header: jwt.JwtHeader, callback: jwt.SigningKeyCallback): void {
   );
 }
 
-const exempt = ['/auth/token', '/user'];
+const exempt = ['/auth/token', '/user', '/availablePublicRequest'];
