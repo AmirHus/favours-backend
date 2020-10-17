@@ -14,7 +14,14 @@ const publicKeySet = JwksClient({
 });
 
 export const tokenVerifier: Middleware = async (ctx, next) => {
-  if (publicEndpoints.includes(ctx.req.url as string)) {
+  if (
+    publicEndpoints.find((endpoint) => {
+      return (
+        ctx.request.url.startsWith(endpoint.url) &&
+        ctx.request.method === endpoint.method
+      );
+    })
+  ) {
     return next();
   }
 
@@ -78,4 +85,9 @@ function getKey(header: jwt.JwtHeader, callback: jwt.SigningKeyCallback): void {
   );
 }
 
-const publicEndpoints = ['/auth/token', '/user', '/availablePublicRequest'];
+const publicEndpoints = [
+  { url: '/auth/token', method: 'POST' },
+  { url: '/user', method: 'POST' },
+  { url: '/publicRequest/available', method: 'GET' },
+  { url: '/publicRequest', method: 'GET' },
+];
