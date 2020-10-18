@@ -28,20 +28,35 @@ export async function completeFavour(favourId: number) {
 
 // read favours from the table
 export async function getOwedFavours(user: string) {
-  const query = {
-    text: 'SELECT * FROM favour where created_by = $1 and repaid = false',
-    values: [user],
-  };
-  // callback
-  return (await pool.query(query)).rows;
+  const favours = await pool.query(
+    `
+    SELECT * FROM favour WHERE ((created_by = $1 AND owing = false) OR (other_party = $1 and owing = true)) AND repaid = false
+    `,
+    [user]
+  );
+
+  return favours.rows;
 }
 
 // read favours from the table
 export async function getOwingFavours(user: string) {
-  const query = {
-    text: 'SELECT * FROM favour where other_party = $1 and repaid = false',
-    values: [user],
-  };
-  // callback
-  return (await pool.query(query)).rows;
+  const favours = await pool.query(
+    `
+    SELECT * FROM favour WHERE ((created_by = $1 AND owing = true) OR (other_party = $1 and owing = false)) AND repaid = false
+    `,
+    [user]
+  );
+
+  return favours.rows;
+}
+
+export async function getFavourProof(id: number) {
+  const favour = await pool.query(
+    `
+    SELECT proof, created_by, other_party FROM public.favour WHERE id = $1
+    `,
+    [id]
+  );
+
+  return favour.rows;
 }

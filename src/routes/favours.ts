@@ -8,9 +8,9 @@ import {
   createFavour,
   getOwedFavours,
   getOwingFavours,
+  getFavourProof,
 } from '../dbqurries/favourDataAccess';
-import { completeFavourValidator } from '../validators/completeFavourValidator';
-import { uploadFile } from '../utilities/awsS3Management';
+import { getFile, uploadFile } from '../utilities/awsS3Management';
 import { INewFavour } from '../interfaces/iNewFavour';
 import { AWS_CONFIG } from '../config';
 
@@ -25,7 +25,42 @@ favourRouter.get('/favour', async (ctx) => {
     owing: await getOwingFavours(userId),
   };
 
-  return (ctx.body = { message: favours });
+  return (ctx.body = { favours });
+});
+
+// get the image proof for a particular favour
+favourRouter.get('/favour/:id/proof', async (ctx) => {
+  const id = (ctx.params as { id: number }).id;
+  const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
+
+  let favour;
+  try {
+    favour = (await getFavourProof(id))[0] as {
+      created_by: string;
+      other_party: string;
+      proof: string;
+    };
+  } catch (error) {
+    console.log(error);
+    ctx.status = 400;
+    return (ctx.body = 'unable to get favour');
+  }
+
+  if (favour.created_by !== userId && favour.other_party !== userId) {
+    ctx.status = 403;
+    return (ctx.body = 'not authorised to access this favour');
+  }
+
+  if (!favour.proof) {
+    ctx.status = 200;
+    return (ctx.body = 'no proof');
+  }
+
+  const file = await getFile(favour.proof);
+  const data = file.Body.toString('utf-8');
+  ctx.set('Content-Type', file.ContentType);
+  ctx.status = 200;
+  return (ctx.body = { data });
 });
 
 // create a new favour in the database for this user.
@@ -84,14 +119,6 @@ favourRouter.post('/favour', async (ctx) => {
 favourRouter.post('/favour/complete', async (ctx) => {
   const body = ctx.request.body;
   const files = ctx.request.files;
-
-  // data validation
-  try {
-    await completeFavourValidator.validateAsync(body, { abortEarly: false });
-  } catch (error) {
-    ctx.status = 500;
-    return (ctx.body = (error as ValidationError).message);
-  }
 
   // upload the file to the database
   const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;

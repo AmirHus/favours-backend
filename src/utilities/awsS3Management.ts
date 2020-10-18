@@ -30,7 +30,7 @@ export async function uploadFile(
 }
 
 export async function getFile(key: string) {
-  return (
-    await s3.getObject({ Bucket: AWS_CONFIG.BUCKET_NAME, Key: key }).promise()
-  ).Body;
+  return await s3
+    .getObject({ Bucket: AWS_CONFIG.BUCKET_NAME, Key: key })
+    .promise();
 }
