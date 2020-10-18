@@ -9,10 +9,14 @@ import {
   getOwedFavours,
   getOwingFavours,
   getFavourProof,
+  getFavourById,
+  completeFavourWithoutProof,
+  completeFavourWithProof,
 } from '../dbqurries/favourDataAccess';
 import { getFile, uploadFile } from '../utilities/awsS3Management';
 import { INewFavour } from '../interfaces/iNewFavour';
 import { AWS_CONFIG } from '../config';
+import { IFavour } from '../interfaces/iFavour';
 
 export const favourRouter = new Router();
 
@@ -116,20 +120,57 @@ favourRouter.post('/favour', async (ctx) => {
 });
 
 // complete a favour
-favourRouter.post('/favour/complete', async (ctx) => {
-  const body = ctx.request.body;
-  const files = ctx.request.files;
-
-  // upload the file to the database
+favourRouter.post('/favour/:id/complete', async (ctx) => {
+  const id = (ctx.params as { id: number }).id;
   const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
 
-  try {
-    uploadFile(files.file.name, files.file.path, files.file.type);
-  } catch (error) {
+  const favours = await getFavourById(id);
+
+  if (!favours.length) {
     ctx.status = 400;
-    return (ctx.body = 'Could not complete favour');
+    return (ctx.body = 'invalid id');
   }
+
+  const favour = favours[0] as IFavour;
+
+  if (favour.created_by !== userId && favour.other_party !== userId) {
+    ctx.status = 403;
+    return (ctx.body = 'not authorised to edit this favour');
+  }
+
+  if (favour.repaid) {
+    ctx.status = 400;
+    return (ctx.body = 'favour is already complete');
+  }
+
+  let key = null;
+
+  if (
+    (userId === favour.created_by && favour.owing) ||
+    (userId === favour.other_party && !favour.owing)
+  ) {
+    const files = ctx.request.files;
+    try {
+      key = `${AWS_CONFIG.FOLDER_NAME}/${ulid()}`;
+      uploadFile(files.file.path, files.file.type, key);
+    } catch (error) {
+      ctx.status = 400;
+      return (ctx.body = 'Could not complete favour');
+    }
+  }
+
+  try {
+    if (key !== null) {
+      await completeFavourWithoutProof(id);
+    } else {
+      await completeFavourWithProof(id, key);
+    }
+  } catch (error) {
+    ctx.status = 500;
+    ctx.body = 'could not update favour';
+  }
+
   // save the user contained in the POST body
   ctx.status = 200;
-  return (ctx.body = body);
+  return (ctx.body = 'favour completed');
 });
