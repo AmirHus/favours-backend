@@ -1,6 +1,6 @@
 import Koa from 'koa';
 // import BodyParser from 'koa-bodyparser';
-import body from 'koa-body'
+import body from 'koa-body';
 import cors from '@koa/cors';
 
 import { tokenVerifier } from './middleware/security';

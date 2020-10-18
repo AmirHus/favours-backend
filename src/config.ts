@@ -21,7 +21,10 @@ export const AUTH0 = {
 };
 
 export const AWS_CONFIG = {
-  BUCKET_ID: process.env.BUCKET_ID as string,
-  ACCESS_KEY_ID: process.env.ACCESS_KEY as string,
-  SECRET_KEY: process.env.SECRET_KEY as string,
+  BUCKET_NAME: process.env.AWS_BUCKET_NAME as string,
+  ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY as string,
+  SECRET_KEY: process.env.AWS_SECRET_KEY as string,
+  REGION: process.env.AWS_REGION as string,
+  API_VERSION: process.env.AWS_API_VERSION as string,
+  FOLDER_NAME: process.env.AWS_S3_FOLDER_NAME as string,
 };

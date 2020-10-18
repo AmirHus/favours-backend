@@ -1,19 +1,20 @@
-import { pool } from '../dbqurries/pool';
+import { pool } from './pool';
 
 // read favours from the table
 export async function createFavour(
   createdBy: string,
   otherParty: string,
   favorItem: string,
-  noOfItems: number
+  noOfItems: number,
+  owing: boolean,
+  proof: string | null
 ) {
-  const query = {
-    text:
-      'INSERT INTO favour(owing, created_by, other_party, favour_item, repaid, no_of_items) VALUES($1, $2, $3, $4, $5, $6)',
-    values: [true, createdBy, otherParty, favorItem, false, noOfItems],
-  };
-  // callback
-  await pool.query(query);
+  await pool.query(
+    `
+    INSERT INTO favour(owing, created_by, other_party, favour_item, repaid, no_of_items, proof) VALUES($1, $2, $3, $4, $5, $6, $7)
+    `,
+    [owing, createdBy, otherParty, favorItem, false, noOfItems, proof]
+  );
 }
 
 export async function completeFavour(favourId: number) {
