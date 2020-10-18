@@ -120,7 +120,7 @@ favourRouter.post('/favour', async (ctx) => {
 });
 
 // complete a favour
-favourRouter.post('/favour/:id/complete', async (ctx) => {
+favourRouter.put('/favour/:id/complete', async (ctx) => {
   const id = (ctx.params as { id: number }).id;
   const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
 
@@ -150,10 +150,15 @@ favourRouter.post('/favour/:id/complete', async (ctx) => {
     (userId === favour.other_party && !favour.owing)
   ) {
     const files = ctx.request.files;
+    if (!files) {
+      ctx.status = 400;
+      return (ctx.body = 'image proof is required');
+    }
     try {
       key = `${AWS_CONFIG.FOLDER_NAME}/${ulid()}`;
       uploadFile(files.file.path, files.file.type, key);
     } catch (error) {
+      console.log(error);
       ctx.status = 400;
       return (ctx.body = 'Could not complete favour');
     }

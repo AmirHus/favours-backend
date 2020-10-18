@@ -9,4 +9,5 @@ export interface IFavour {
   repaid: boolean;
   no_of_items: number;
   proof: string;
+  proof_of_completion: string;
 }

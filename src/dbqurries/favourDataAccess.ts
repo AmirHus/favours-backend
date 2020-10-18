@@ -21,7 +21,7 @@ export async function createFavour(
 export async function completeFavourWithProof(id: number, proof: string) {
   await pool.query(
     `
-    UPDATE public.favour SET repaid = true, proof = $1 WHERE id = $2
+    UPDATE public.favour SET repaid = true, proof_of_completion = $1 WHERE id = $2
     `,
     [proof, id]
   );
