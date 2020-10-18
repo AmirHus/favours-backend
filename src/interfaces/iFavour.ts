@@ -2,9 +2,11 @@ import { FavourItems } from '../enums/favourItem';
 
 export interface IFavour {
   id: number;
-  createdBy: string;
-  otherParty: string;
-  favourItem: FavourItems;
+  owing: boolean;
+  created_by: string;
+  other_party: string;
+  favour_item: FavourItems;
   repaid: boolean;
-  noItems: number;
+  no_of_items: number;
+  proof: string;
 }

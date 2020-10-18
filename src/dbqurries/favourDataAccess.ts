@@ -17,13 +17,24 @@ export async function createFavour(
   );
 }
 
-export async function completeFavour(favourId: number) {
-  const query = {
-    text: 'UPDATE favour SET owing = false, repaid = true WHERE id = $1',
-    values: [favourId],
-  };
-  // callback
-  await pool.query(query);
+// complete favour with proof
+export async function completeFavourWithProof(id: number, proof: string) {
+  await pool.query(
+    `
+    UPDATE public.favour SET repaid = true, proof = $1 WHERE id = $2
+    `,
+    [proof, id]
+  );
+}
+
+// complete favour without proof
+export async function completeFavourWithoutProof(id: number) {
+  await pool.query(
+    `
+    UPDATE public.favour SET repaid = true WHERE id = $1
+    `,
+    [id]
+  );
 }
 
 // read favours from the table
@@ -54,6 +65,17 @@ export async function getFavourProof(id: number) {
   const favour = await pool.query(
     `
     SELECT proof, created_by, other_party FROM public.favour WHERE id = $1
+    `,
+    [id]
+  );
+
+  return favour.rows;
+}
+
+export async function getFavourById(id: number) {
+  const favour = await pool.query(
+    `
+    SELECT * FROM public.favour WHERE id = $1
     `,
     [id]
   );
