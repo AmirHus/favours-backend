@@ -1,5 +1,6 @@
 import Koa from 'koa';
-import BodyParser from 'koa-bodyparser';
+// import BodyParser from 'koa-bodyparser';
+import body from 'koa-body';
 import cors from '@koa/cors';
 
 import { tokenVerifier } from './middleware/security';
@@ -12,7 +13,7 @@ import { publicRequestRouter } from './routes/publicRequest';
 const app = new Koa();
 
 app.use(cors());
-app.use(BodyParser());
+app.use(body({ multipart: true }));
 app.use(tokenVerifier);
 app.use(favourRouter.routes());
 app.use(userRouter.routes());
