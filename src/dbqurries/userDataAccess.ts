@@ -24,3 +24,15 @@ export async function getUserById(id: string) {
 
   return user.rows[0];
 }
+
+export async function getAllUsersExceptCaller(id: string) {
+  const users = await pool.query(
+    `
+    SELECT * FROM public.user
+    WHERE id != $1
+    `,
+    [id]
+  );
+
+  return users.rows;
+}

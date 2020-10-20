@@ -32,3 +32,24 @@ export async function getAvailablePublicRequests() {
 
   return availalbePublicRequest.rows;
 }
+
+export async function getPublicRequestById(id: number) {
+  const request = await pool.query(
+    `
+    SELECT * FROM public.public_request WHERE id = $1
+    `,
+    [id]
+  );
+
+  return request.rows;
+}
+
+export async function acceptPublicRequest(id: number, userId: string) {
+  await pool.query(
+    `
+    UPDATE public.public_request SET accepted_by = $1 WHERE id = $2    
+    `,
+    [userId, id]
+  );
+  return;
+}

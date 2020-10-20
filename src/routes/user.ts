@@ -3,7 +3,11 @@ import { createUserValidator } from '../validators/createUserValidator';
 import { INewUser } from '../interfaces/iNewUser';
 import { getAuth0User, createAuth0User } from '../utilities/auth0ManagamentApi';
 import { ValidationError } from 'joi';
-import { createUser } from '../dbqurries/userDataAccess';
+import {
+  createUser,
+  getAllUsersExceptCaller,
+} from '../dbqurries/userDataAccess';
+import { IAuth0Token } from '../interfaces/iAuth0Token';
 
 export const userRouter = new Router();
 
@@ -42,6 +46,15 @@ userRouter.post('/user', async (ctx) => {
   }
 });
 
-userRouter.get('/user/:id', (ctx) => {
-  return (ctx.body = { message: 'this is get' });
+userRouter.get('/users', async (ctx) => {
+  const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
+
+  try {
+    const users = await getAllUsersExceptCaller(userId);
+    ctx.status = 200;
+    return (ctx.body = users);
+  } catch (error) {
+    ctx.status = 500;
+    return (ctx.body = 'unable to get users');
+  }
 });

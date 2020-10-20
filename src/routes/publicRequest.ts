@@ -3,8 +3,10 @@ import { ValidationError } from 'joi';
 import { createPublicRequestValidator } from '../validators/createPublicRequestValidator';
 import { IAuth0Token } from '../interfaces/iAuth0Token';
 import {
+  acceptPublicRequest,
   createPublicRequest,
   getAvailablePublicRequests,
+  getPublicRequestById,
 } from '../dbqurries/publicRequestDataAccess';
 import { INewPublicRequestReward } from '../interfaces/iNewPublicRequestReward';
 import { newPublicRequestRewardsFormatter } from '../utilities/newPublicRequestRewardsFormatter';
@@ -152,5 +154,36 @@ publicRequestRouter.put('/publicRequest/:id/reward', async (ctx) => {
 
     ctx.status = 500;
     return (ctx.body = { message: 'could not update the rewards' });
+  }
+});
+
+publicRequestRouter.put('/publicRequest/:id/accept', async (ctx) => {
+  const publicRequestId = (ctx.params as { id: number }).id;
+  const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
+
+  let request;
+  try {
+    request = await getPublicRequestById(publicRequestId);
+    if (request.length === 0) {
+      ctx.status = 400;
+      return (ctx.body = 'invalid public request id');
+    }
+    request = request[0] as IPublicRequest;
+    if (request.created_by === userId) {
+      ctx.status = 400;
+      return (ctx.body = 'cannot accept a public request created by you');
+    }
+  } catch (error) {
+    ctx.status = 500;
+    return (ctx.body = 'could not retreive public request');
+  }
+
+  try {
+    await acceptPublicRequest(publicRequestId, userId);
+    ctx.status = 200;
+    return (ctx.body = 'publict request accepted');
+  } catch {
+    ctx.status = 500;
+    return (ctx.body = 'could not accept public request');
   }
 });
