@@ -34,7 +34,9 @@ export async function getUserRewards(userId: string, publicRequestId: number) {
 export async function getPublicRequestRewards(publicRequestId: number) {
   const rewards = await pool.query(
     `
-    SELECT * FROM public.public_request_reward
+    SELECT U.name, U.email, R.reward_item, R.no_of_rewards 
+    FROM public.public_request_reward R INNER JOIN public.user U
+    ON U.id = R.user_id
     WHERE public_request_id = $1
     `,
     [publicRequestId]
