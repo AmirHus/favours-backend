@@ -53,19 +53,6 @@ export async function acceptPublicRequest(id: number, userId: string) {
   );
   return;
 }
-/*
-export async function leaderboardRequest() {
-  const request = await pool.query(
-    `
-    SELECT accepted_by, COUNT(accepted_by) AS Requests_Completed FROM public_request
-    WHERE completed = TRUE
-    GROUP BY accepted_by
-    ORDER BY Requests_Completed DESC
-    `
-  );
-  return request.rows;
-}
-*/
 
 export async function leaderboardRequest() {
   const request = await pool.query(
