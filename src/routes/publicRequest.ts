@@ -32,7 +32,7 @@ publicRequestRouter.get('/publicRequest/leaderboard', async (ctx) => {
   } catch (error) {
     console.log(error);
     ctx.status = 500;
-    return (ctx.body = (error as ValidationError).message);
+    return (ctx.body = 'could not retrieve the leaderboard');
   }
 });
 
