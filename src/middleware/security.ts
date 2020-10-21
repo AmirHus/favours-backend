@@ -90,5 +90,5 @@ const publicEndpoints = [
   { url: '/user', method: 'POST' },
   { url: '/publicRequest/available', method: 'GET' },
   { url: '/publicRequest', method: 'GET' },
-  { url: '/publicRequestLeaderboard', method: 'GET' },
+  { url: '/publicRequest/leaderboard', method: 'GET' },
 ];
