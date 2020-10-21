@@ -1,9 +1,11 @@
 import Router from 'koa-router';
+import { ulid } from 'ulid';
 import { ValidationError } from 'joi';
 import { createPublicRequestValidator } from '../validators/createPublicRequestValidator';
 import { IAuth0Token } from '../interfaces/iAuth0Token';
 import {
   acceptPublicRequest,
+  completePublicRequest,
   createPublicRequest,
   getAvailablePublicRequests,
   getPublicRequestById,
@@ -16,10 +18,14 @@ import {
   getUserRewards,
   updateUserRewards,
   getPublicRequestRewards,
+  getPublicRequestRewardsInternal,
 } from '../dbqurries/publicRequestRewardDataAccess';
 import { addRewardsValidator } from '../validators/addRewardsValidator';
 import { IPublicRequestReward } from '../interfaces/iPublicRequestReward';
 import { updateUserRewardsFormatter } from '../utilities/updateUserRewardsFormatter';
+import { AWS_CONFIG } from '../config';
+import { uploadFile } from '../utilities/awsS3Management';
+import { convertRewardsToFavour } from '../utilities/convertRewardsToFavours';
 
 export const publicRequestRouter = new Router();
 
@@ -85,7 +91,8 @@ publicRequestRouter.post('/publicRequest', async (ctx) => {
     return (ctx.body = { publicRequest, publicRequestRewards });
   } catch (error) {
     console.error(error);
-    ctx.throw(500, 'unable to create publicRequest');
+    ctx.status = 500;
+    return (ctx.body = 'unable to create publicRequest');
   }
 });
 
@@ -151,7 +158,6 @@ publicRequestRouter.put('/publicRequest/:id/reward', async (ctx) => {
     return (ctx.body = { message: 'rewards updated' });
   } catch (error) {
     console.error(error);
-
     ctx.status = 500;
     return (ctx.body = { message: 'could not update the rewards' });
   }
@@ -174,6 +180,7 @@ publicRequestRouter.put('/publicRequest/:id/accept', async (ctx) => {
       return (ctx.body = 'cannot accept a public request created by you');
     }
   } catch (error) {
+    console.error(error);
     ctx.status = 500;
     return (ctx.body = 'could not retreive public request');
   }
@@ -182,8 +189,73 @@ publicRequestRouter.put('/publicRequest/:id/accept', async (ctx) => {
     await acceptPublicRequest(publicRequestId, userId);
     ctx.status = 200;
     return (ctx.body = 'publict request accepted');
-  } catch {
+  } catch (error) {
+    console.error(error);
     ctx.status = 500;
     return (ctx.body = 'could not accept public request');
   }
+});
+
+publicRequestRouter.put('/publicRequest/:id/complete', async (ctx) => {
+  const publicRequestId = (ctx.params as { id: number }).id;
+  const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
+
+  try {
+    let request;
+    request = await getPublicRequestById(publicRequestId);
+    if (request.length === 0) {
+      ctx.status = 400;
+      return (ctx.body = 'invalid public request id');
+    }
+    request = request[0] as IPublicRequest;
+    if (request.accepted_by !== userId) {
+      ctx.status = 403;
+      return (ctx.body = 'cannot complete a request you did not accept');
+    }
+    if (request.completed) {
+      ctx.status = 400;
+      return (ctx.body = 'public request is already compelte');
+    }
+  } catch (error) {
+    console.error(error);
+    ctx.status = 500;
+    return (ctx.body = 'could not retrieve public request');
+  }
+
+  let key;
+  try {
+    const files = ctx.request.files;
+    if (!files) {
+      ctx.status = 400;
+      return (ctx.body = 'image proof is required');
+    }
+    key = `${AWS_CONFIG.PUBLIC_REQUEST_FOLDER_NAME}/${ulid()}`;
+    uploadFile(files.file.path, files.file.type, key);
+  } catch (error) {
+    console.log(error);
+    ctx.status = 500;
+    return (ctx.body = 'could not upload image');
+  }
+
+  try {
+    await completePublicRequest(publicRequestId, key);
+  } catch (error) {
+    console.error(error);
+    ctx.status = 500;
+    return (ctx.body = 'Could not complete public request');
+  }
+
+  try {
+    const rewards = (await getPublicRequestRewardsInternal(
+      publicRequestId
+    )) as IPublicRequestReward[];
+    await convertRewardsToFavour(rewards, userId, key);
+  } catch (error) {
+    console.error(error);
+    ctx.status = 500;
+    return (ctx.body = 'could not convert rewards to favours');
+  }
+
+  ctx.status = 200;
+  return (ctx.body = 'public request complete');
 });

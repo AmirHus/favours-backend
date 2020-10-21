@@ -45,6 +45,17 @@ export async function getPublicRequestRewards(publicRequestId: number) {
   return rewards.rows;
 }
 
+export async function getPublicRequestRewardsInternal(publicRequestId: number) {
+  const rewards = await pool.query(
+    `
+    SELECT * from public.public_request_reward WHERE public_request_id = $1
+    `,
+    [publicRequestId]
+  );
+
+  return rewards.rows;
+}
+
 export async function updateUserRewards(
   userId: string,
   rewardItem: string,
