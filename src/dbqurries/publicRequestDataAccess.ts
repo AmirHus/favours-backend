@@ -63,3 +63,17 @@ export async function completePublicRequest(id: number, proof: string) {
     [proof, id]
   );
 }
+
+export async function leaderboardRequest() {
+  const request = await pool.query(
+    `
+    SELECT U.name as accepted_by_name, u.email as accepted_by_email, COUNT(P.accepted_by) AS Requests_Completed
+    FROM public.public_request P INNER JOIN public.user U
+    ON P.accepted_by = U.id
+    WHERE P.completed = TRUE
+    GROUP BY P.accepted_by, U.name, u.email
+    ORDER BY Requests_Completed DESC
+    `
+  );
+  return request.rows;
+}
