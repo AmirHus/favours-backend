@@ -24,7 +24,7 @@ import { updateUserRewardsFormatter } from '../utilities/updateUserRewardsFormat
 
 export const publicRequestRouter = new Router();
 
-publicRequestRouter.get('/publicRequestLeaderboard', async (ctx) => {
+publicRequestRouter.get('/publicRequest/leaderboard', async (ctx) => {
   const leaderboard = await leaderboardRequest();
   ctx.status = 200;
   return (ctx.body = leaderboard);
