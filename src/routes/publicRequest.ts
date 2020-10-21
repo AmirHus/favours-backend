@@ -7,6 +7,7 @@ import {
   createPublicRequest,
   getAvailablePublicRequests,
   getPublicRequestById,
+  leaderboardRequest,
 } from '../dbqurries/publicRequestDataAccess';
 import { INewPublicRequestReward } from '../interfaces/iNewPublicRequestReward';
 import { newPublicRequestRewardsFormatter } from '../utilities/newPublicRequestRewardsFormatter';
@@ -22,6 +23,12 @@ import { IPublicRequestReward } from '../interfaces/iPublicRequestReward';
 import { updateUserRewardsFormatter } from '../utilities/updateUserRewardsFormatter';
 
 export const publicRequestRouter = new Router();
+
+publicRequestRouter.get('/publicRequestLeaderboard', async (ctx) => {
+  const leaderboard = await leaderboardRequest();
+  ctx.status = 200;
+  return (ctx.body = leaderboard);
+});
 
 publicRequestRouter.get('/publicRequest/available', async (ctx) => {
   const publicRequests = await getAvailablePublicRequests();
