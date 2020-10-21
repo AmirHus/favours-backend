@@ -89,7 +89,7 @@ favourRouter.post('/favour', async (ctx) => {
       ctx.status = 400;
       return (ctx.body = 'image proof is missing');
     }
-    key = `${AWS_CONFIG.FOLDER_NAME}/${ulid()}`;
+    key = `${AWS_CONFIG.FAVOUR_FOLDER_NAME}/${ulid()}`;
     try {
       await uploadFile(imageProof.file.path, imageProof.file.type, key);
     } catch (error) {
@@ -155,7 +155,7 @@ favourRouter.put('/favour/:id/complete', async (ctx) => {
       return (ctx.body = 'image proof is required');
     }
     try {
-      key = `${AWS_CONFIG.FOLDER_NAME}/${ulid()}`;
+      key = `${AWS_CONFIG.FAVOUR_FOLDER_NAME}/${ulid()}`;
       uploadFile(files.file.path, files.file.type, key);
     } catch (error) {
       console.log(error);

@@ -26,5 +26,7 @@ export const AWS_CONFIG = {
   SECRET_KEY: process.env.AWS_SECRET_KEY as string,
   REGION: process.env.AWS_REGION as string,
   API_VERSION: process.env.AWS_API_VERSION as string,
-  FOLDER_NAME: process.env.AWS_S3_FOLDER_NAME as string,
+  FAVOUR_FOLDER_NAME: process.env.AWS_S3_FAVOUR_FOLDER_NAME as string,
+  PUBLIC_REQUEST_FOLDER_NAME: process.env
+    .AWS_S3_PUBLIC_REQUEST_FOLDER_NAME as string,
 };

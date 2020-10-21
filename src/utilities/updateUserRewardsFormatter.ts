@@ -18,9 +18,9 @@ export function updateUserRewardsFormatter(
     if (existingReward) {
       rewardsToUpdate.push({
         no_of_rewards: newReward.noOfRewards + existingReward.no_of_rewards,
-        publicRequestId: existingReward.publicRequestId,
+        public_request_id: existingReward.public_request_id,
         reward_item: existingReward.reward_item,
-        userId: existingReward.userId,
+        user_id: existingReward.user_id,
       });
       return;
     }

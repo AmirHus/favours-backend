@@ -54,6 +54,16 @@ export async function acceptPublicRequest(id: number, userId: string) {
   return;
 }
 
+export async function completePublicRequest(id: number, proof: string) {
+  await pool.query(
+    `
+    UPDATE public.public_request SET image_proof = $1, completed = true
+    WHERE id = $2
+    `,
+    [proof, id]
+  );
+}
+
 export async function leaderboardRequest() {
   const request = await pool.query(
     `
