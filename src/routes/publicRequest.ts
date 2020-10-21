@@ -25,9 +25,15 @@ import { updateUserRewardsFormatter } from '../utilities/updateUserRewardsFormat
 export const publicRequestRouter = new Router();
 
 publicRequestRouter.get('/publicRequest/leaderboard', async (ctx) => {
-  const leaderboard = await leaderboardRequest();
-  ctx.status = 200;
-  return (ctx.body = leaderboard);
+  try {
+    const leaderboard = await leaderboardRequest();
+    ctx.status = 200;
+    return (ctx.body = leaderboard);
+  } catch (error) {
+    console.log(error);
+    ctx.status = 500;
+    return (ctx.body = (error as ValidationError).message);
+  }
 });
 
 publicRequestRouter.get('/publicRequest/available', async (ctx) => {
