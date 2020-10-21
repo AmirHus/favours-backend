@@ -126,6 +126,28 @@ publicRequestRouter.put('/publicRequest/:id/reward', async (ctx) => {
 
   const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
 
+  let request;
+  try {
+    request = await getPublicRequestById(publicRequestId);
+    if (request.length === 0) {
+      ctx.status = 400;
+      return (ctx.body = 'invalid public request id');
+    }
+    request = request[0] as IPublicRequest;
+    if (request.completed) {
+      ctx.status = 400;
+      return (ctx.body = 'request is already completed');
+    }
+    if (request.accepted_by) {
+      ctx.status = 400;
+      return (ctx.body = 'request is already accepted');
+    }
+  } catch (error) {
+    console.error(error);
+    ctx.status = 500;
+    return (ctx.body = 'could not retreive public request');
+  }
+
   try {
     const currentRewards = (await getUserRewards(
       userId,
