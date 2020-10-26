@@ -9,5 +9,5 @@ This repo is the API for the favour tracking application. It will be developed w
 5. If you are using VScode, install and enable the `Prettier` and `TSLint` extensions.
 
 ## Starting the application
-1. Before staring you will need the environment varialbes in the `.env` file. `.env` file is to not be commited and storred into the repo at all for security reasons. But a `sample.env` will have sample variables in there. You can request the the variables for @AmirHus
+1. Before staring you will need the environment varialbes in the `.env` file. `.env` file is to not be commited and storred into the repo at all for security reasons. But a `sample.env` will have sample variables in there. You can request actual variables from @AmirHus
 2. Run `npm start`. This will start up nodemon which compiles the code and creates the `build` folder. Nodemon also observes any file changes and will automatially reset the server with the changes made.
