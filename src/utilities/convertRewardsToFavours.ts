@@ -1,6 +1,7 @@
 import { createFavour } from '../dbqurries/favourDataAccess';
 import { IPublicRequestReward } from '../interfaces/iPublicRequestReward';
 
+// converts rewards from a public request to favours
 export async function convertRewardsToFavour(
   rewards: IPublicRequestReward[],
   userId: string,

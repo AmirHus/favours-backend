@@ -9,9 +9,11 @@ import { IAuth0Token } from '../interfaces/iAuth0Token';
 
 export const authRouter = new Router();
 
+// used for the three way handshake, recieves a code and uses it to request a jwt from auth0
 authRouter.post('/auth/token', async (ctx) => {
   const body = ctx.request.body as IAuth0TokenRequest;
 
+  // validate the request
   try {
     await tokenRequestValidator.validateAsync(body, { abortEarly: false });
   } catch (error) {
@@ -19,6 +21,7 @@ authRouter.post('/auth/token', async (ctx) => {
     return (ctx.body = (error as ValidationError).message);
   }
 
+  // get the jwt from auth0
   let token;
   try {
     token = await axios.post(`${AUTH0.BASE_ENDPOINT_URL}/oauth/token`, {
@@ -35,6 +38,7 @@ authRouter.post('/auth/token', async (ctx) => {
 
   ctx.status = 200;
 
+  // decode the token to extract the expiry
   const access_token = (token.data as { access_token: string }).access_token;
   const decodedToken = jwt.decode(
     (token.data as IAuth0TokenResponse).access_token

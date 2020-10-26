@@ -1,6 +1,7 @@
 import { IUser } from '../interfaces/iUser';
 import { pool } from './pool';
 
+// creates a user entity
 export async function createUser(newUser: IUser) {
   const user = await pool.query(
     `
@@ -13,6 +14,7 @@ export async function createUser(newUser: IUser) {
   return user.rows[0];
 }
 
+// returns a specific user by id
 export async function getUserById(id: string) {
   const user = await pool.query(
     `
@@ -25,6 +27,8 @@ export async function getUserById(id: string) {
   return user.rows[0];
 }
 
+// returns all the users in the database
+// excpet for a specefic user
 export async function getAllUsersExceptCaller(id: string) {
   const users = await pool.query(
     `

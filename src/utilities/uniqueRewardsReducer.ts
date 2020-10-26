@@ -1,5 +1,6 @@
 import { INewPublicRequestReward } from '../interfaces/iNewPublicRequestReward';
 
+// reduces rewards to unique reward types and adds up any duplicates
 export function uniqueRewardsReducer(rewards: INewPublicRequestReward[]) {
   const uniqueRewards = [] as INewPublicRequestReward[];
 

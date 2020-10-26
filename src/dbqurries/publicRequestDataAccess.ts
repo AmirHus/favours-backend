@@ -1,6 +1,7 @@
 import { INewPublicRequest } from '../interfaces/iNewPublicRequest';
 import { pool } from './pool';
 
+// creates a public request entity
 export async function createPublicRequest(publicRequest: INewPublicRequest) {
   const newPublicRequest = await pool.query(
     `
@@ -19,6 +20,7 @@ export async function createPublicRequest(publicRequest: INewPublicRequest) {
   return newPublicRequest.rows[0];
 }
 
+// returns all the available public requests (not accepted by anyone yet)
 export async function getAvailablePublicRequests() {
   const availalbePublicRequest = await pool.query(
     `
@@ -33,6 +35,7 @@ export async function getAvailablePublicRequests() {
   return availalbePublicRequest.rows;
 }
 
+// returns a public request by id
 export async function getPublicRequestById(id: number) {
   const request = await pool.query(
     `
@@ -44,6 +47,7 @@ export async function getPublicRequestById(id: number) {
   return request.rows;
 }
 
+// updates entity when a user accepts a public request
 export async function acceptPublicRequest(id: number, userId: string) {
   await pool.query(
     `
@@ -54,6 +58,7 @@ export async function acceptPublicRequest(id: number, userId: string) {
   return;
 }
 
+// records a public request as complete
 export async function completePublicRequest(id: number, proof: string) {
   await pool.query(
     `
@@ -64,7 +69,9 @@ export async function completePublicRequest(id: number, proof: string) {
   );
 }
 
-export async function leaderboardRequest() {
+// returns a leaderboard of users listed from highest to lowest
+// leaderboard is based on how many public requests are complete
+export async function getLeaderboard() {
   const request = await pool.query(
     `
     SELECT U.name as accepted_by_name, u.email as accepted_by_email, COUNT(P.accepted_by) AS Requests_Completed

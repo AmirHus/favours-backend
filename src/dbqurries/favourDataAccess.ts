@@ -1,6 +1,6 @@
 import { pool } from './pool';
 
-// read favours from the table
+// creates a favour entity
 export async function createFavour(
   createdBy: string,
   otherParty: string,
@@ -37,7 +37,7 @@ export async function completeFavourWithoutProof(id: number) {
   );
 }
 
-// read favours from the table
+// retruns the favours that a user is owed
 export async function getOwedFavours(user: string) {
   const favours = await pool.query(
     `
@@ -49,7 +49,7 @@ export async function getOwedFavours(user: string) {
   return favours.rows;
 }
 
-// read favours from the table
+// returns the favours that a user is owing
 export async function getOwingFavours(user: string) {
   const favours = await pool.query(
     `
@@ -61,6 +61,7 @@ export async function getOwingFavours(user: string) {
   return favours.rows;
 }
 
+// returns the proof key of a favour
 export async function getFavourProof(id: number) {
   const favour = await pool.query(
     `
@@ -72,6 +73,7 @@ export async function getFavourProof(id: number) {
   return favour.rows;
 }
 
+// returns a favour by id
 export async function getFavourById(id: number) {
   const favour = await pool.query(
     `

@@ -2,6 +2,8 @@ import { IPublicRequestReward } from '../interfaces/iPublicRequestReward';
 import { INewPublicRequestReward } from '../interfaces/iNewPublicRequestReward';
 import { uniqueRewardsReducer } from './uniqueRewardsReducer';
 
+// splits public request rewards to an array of awards that a new and need to be created
+// and rewards that exist and need to be updated
 export function updateUserRewardsFormatter(
   currentRewards: IPublicRequestReward[],
   newRewards: INewPublicRequestReward[]

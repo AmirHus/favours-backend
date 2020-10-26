@@ -1,6 +1,7 @@
 import { INewPublicRequestReward } from '../interfaces/iNewPublicRequestReward';
 import { uniqueRewardsReducer } from './uniqueRewardsReducer';
 
+// formats public request rewards so they can be bulk created in the database
 export function newPublicRequestRewardsFormatter(
   publicRequestId: number,
   userId: string,

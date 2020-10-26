@@ -11,9 +11,11 @@ import { IAuth0Token } from '../interfaces/iAuth0Token';
 
 export const userRouter = new Router();
 
+// create a user (used for sign up)
 userRouter.post('/user', async (ctx) => {
   const newUser = ctx.request.body as INewUser;
 
+  // validate the request
   try {
     await createUserValidator.validateAsync(newUser, { abortEarly: false });
   } catch (error) {
@@ -22,7 +24,7 @@ userRouter.post('/user', async (ctx) => {
   }
 
   try {
-    // check if user exists first
+    // check if user with same email exists
     const users = await getAuth0User(newUser.email);
     if (users.length) {
       ctx.status = 400;
@@ -46,6 +48,7 @@ userRouter.post('/user', async (ctx) => {
   }
 });
 
+// returns all the users excpet for the user that is making the request
 userRouter.get('/users', async (ctx) => {
   const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
 

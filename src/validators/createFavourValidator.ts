@@ -3,6 +3,7 @@ import { FavourItems } from '../enums/favourItem';
 
 const types = Object.values(FavourItems);
 
+// schema of request body when creating a new favour
 export const createFavourValidator = Joi.object({
   otherParty: Joi.string().min(1).max(30).required(),
   noOfItems: Joi.number().min(1).required(),

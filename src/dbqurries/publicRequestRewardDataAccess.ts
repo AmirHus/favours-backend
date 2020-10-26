@@ -1,5 +1,7 @@
 import { pool } from './pool';
 
+// creates the rewards entities for a public request
+// creates multiple rewards at a time
 export async function createPublicRequestReward(
   userIds: string[],
   publicRequestIds: number[],
@@ -19,6 +21,7 @@ export async function createPublicRequestReward(
   return publicRequestRewards.rows;
 }
 
+// gets the rewards that a user is offering for a specific public request
 export async function getUserRewards(userId: string, publicRequestId: number) {
   const rewards = await pool.query(
     `
@@ -31,6 +34,7 @@ export async function getUserRewards(userId: string, publicRequestId: number) {
   return rewards.rows;
 }
 
+// gets all the rewards being offered for a specific public request
 export async function getPublicRequestRewards(publicRequestId: number) {
   const rewards = await pool.query(
     `
@@ -45,6 +49,8 @@ export async function getPublicRequestRewards(publicRequestId: number) {
   return rewards.rows;
 }
 
+// internal function that returns all the rewards for a specfic public request
+// this function return the userid rather than email or name
 export async function getPublicRequestRewardsInternal(publicRequestId: number) {
   const rewards = await pool.query(
     `
@@ -56,6 +62,7 @@ export async function getPublicRequestRewardsInternal(publicRequestId: number) {
   return rewards.rows;
 }
 
+// update a specific reward item that a user is offering
 export async function updateUserRewards(
   userId: string,
   rewardItem: string,

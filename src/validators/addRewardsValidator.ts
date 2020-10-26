@@ -12,6 +12,7 @@ export const rewardSchema = Joi.object({
   noOfRewards: Joi.number().min(1).required(),
 });
 
+// validator with request body when adding rewards
 export const addRewardsValidator = Joi.object({
   rewards: Joi.array().required().min(1).items(rewardSchema),
 });

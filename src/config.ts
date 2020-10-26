@@ -1,3 +1,4 @@
+// database config variables
 export const DB_CONFIG = {
   PASSWORD: process.env.DB_PASSWORD as string,
   USERNAME: process.env.DB_USERNAME as string,
@@ -6,6 +7,7 @@ export const DB_CONFIG = {
   HOST: process.env.DB_HOST as string,
 };
 
+// auth0 config variables
 export const AUTH0 = {
   BASE_ENDPOINT_URL: `https://${process.env.AUTH0_DOMAIN}`,
   DOMAIN: process.env.AUTH0_DOMAIN as string,
@@ -20,6 +22,7 @@ export const AUTH0 = {
   },
 };
 
+// aws config variables
 export const AWS_CONFIG = {
   BUCKET_NAME: process.env.AWS_BUCKET_NAME as string,
   ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY as string,

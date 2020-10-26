@@ -20,7 +20,7 @@ import { IFavour } from '../interfaces/iFavour';
 
 export const favourRouter = new Router();
 
-// get all favours which this user owes or owed to.
+// get all favours which calling user owes or is owed
 favourRouter.get('/favour', async (ctx) => {
   const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
 
@@ -38,6 +38,7 @@ favourRouter.get('/favour/:id/proof', async (ctx) => {
   const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
 
   let favour;
+  // get the favour
   try {
     favour = (await getFavourProof(id))[0] as {
       created_by: string;
@@ -50,16 +51,19 @@ favourRouter.get('/favour/:id/proof', async (ctx) => {
     return (ctx.body = 'unable to get favour');
   }
 
+  // check if the calling user has access to this favour
   if (favour.created_by !== userId && favour.other_party !== userId) {
     ctx.status = 403;
     return (ctx.body = 'not authorised to access this favour');
   }
 
+  // return if this favour doesn't an image
   if (!favour.proof) {
     ctx.status = 200;
     return (ctx.body = 'no proof');
   }
 
+  // get the image file from s3 bucket
   const file = await getFile(favour.proof);
   const data = file.Body.toString('utf-8');
   ctx.set('Content-Type', file.ContentType);
@@ -67,7 +71,7 @@ favourRouter.get('/favour/:id/proof', async (ctx) => {
   return (ctx.body = { data });
 });
 
-// create a new favour in the database for this user.
+// create a new favour in the database
 favourRouter.post('/favour', async (ctx) => {
   const body = ctx.request.body as INewFavour;
   const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
@@ -82,6 +86,7 @@ favourRouter.post('/favour', async (ctx) => {
 
   const owing = JSON.parse(body.owing) as boolean;
 
+  // check if image is required, if so save the image to s3 bucket
   let key = null;
   if (!owing) {
     const imageProof = ctx.request.files;
@@ -114,7 +119,7 @@ favourRouter.post('/favour', async (ctx) => {
     ctx.status = 500;
     return (ctx.body = 'could not create favour');
   }
-  // save the user contained in the POST body
+
   ctx.status = 200;
   return (ctx.body = body);
 });
@@ -125,19 +130,20 @@ favourRouter.put('/favour/:id/complete', async (ctx) => {
   const userId = (ctx.state as { auth0User: IAuth0Token }).auth0User.sub;
 
   const favours = await getFavourById(id);
-
+  // check if the id provided is valid
   if (!favours.length) {
     ctx.status = 400;
     return (ctx.body = 'invalid id');
   }
 
   const favour = favours[0] as IFavour;
-
+  // check to see if calling user is authorised to edit this favour
   if (favour.created_by !== userId && favour.other_party !== userId) {
     ctx.status = 403;
     return (ctx.body = 'not authorised to edit this favour');
   }
 
+  // check to see if favour is already completed
   if (favour.repaid) {
     ctx.status = 400;
     return (ctx.body = 'favour is already complete');
@@ -145,6 +151,7 @@ favourRouter.put('/favour/:id/complete', async (ctx) => {
 
   let key = null;
 
+  // check to see if image proof is required, if so to upload to s3 bucket
   if (
     (userId === favour.created_by && favour.owing) ||
     (userId === favour.other_party && !favour.owing)
@@ -164,6 +171,7 @@ favourRouter.put('/favour/:id/complete', async (ctx) => {
     }
   }
 
+  // complete the favour
   try {
     if (key !== null) {
       await completeFavourWithoutProof(id);
@@ -175,7 +183,6 @@ favourRouter.put('/favour/:id/complete', async (ctx) => {
     ctx.body = 'could not update favour';
   }
 
-  // save the user contained in the POST body
   ctx.status = 200;
   return (ctx.body = 'favour completed');
 });
